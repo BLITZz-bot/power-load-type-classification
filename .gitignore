@@ -6,9 +6,8 @@ load_type_classification_4.ipynb
 load_type_classification_5.ipynb
 load_type_classification_final.ipynb
 
-
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
-.png
-catboost_info/
+*.png
+catboost_info/
