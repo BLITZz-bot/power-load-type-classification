@@ -2,12 +2,13 @@
 
 ## Overview
 
-This project builds an end-to-end machine learning pipeline to classify industrial power-system loads into three operational regimes:
+This project builds a machine learning classification pipeline to label each 15-minute power-system interval into one of three operational load regimes — based on the sensor readings recorded at that interval:
+
 - **Light_Load**
 - **Medium_Load**
 - **Maximum_Load**
 
-Accurate load-type classification enables industrial facilities and grid operators to anticipate demand peaks, optimize tariff schedules, and balance power factor and reactive power compensation dynamically.
+The task is a **supervised multi-class classification** problem: given electrical measurements (active power, reactive power, power factor, CO₂, and time-of-day) available at a given interval, predict which load category that interval belongs to.
 
 ---
 
@@ -49,12 +50,14 @@ A total of **18 domain-informed features** were constructed without introducing 
 
 ## Validation Strategy
 
-To prevent temporal leakage and simulate real-world production forecasting, a **strict chronological split** was employed:
+A **chronological split** was used instead of random splitting to prevent temporal data leakage. Since the dataset is recorded sequentially over time, randomly shuffling and splitting would allow the model to "see" future observations during training, artificially inflating performance metrics.
+
+By splitting strictly on time, the model is only trained on data that would genuinely precede the test period:
 
 | Split | Period | Record Count | Role |
 |---|---|---:|---|
 | **Training Set** | January 1 – November 30, 2018 | 32,064 rows | Model training and threshold calibration |
-| **Blind Test Set** | December 1 – December 31, 2018 | 2,977 rows | Unseen out-of-time evaluation |
+| **Held-Out Test Set** | December 1 – December 31, 2018 | 2,977 rows | Final evaluation on records the model never saw during training |
 
 ---
 
@@ -96,6 +99,6 @@ weighted avg       0.81      0.80      0.80      2977
 
 ## Key Findings & Discussion
 
-1. **Near-Perfect Identification of Light Load**: The model reaches **0.99 precision** and **0.95 recall** for `Light_Load`, making it exceptionally dependable for detecting off-peak periods.
-2. **Boundary Overlap between Medium and Maximum Load**: The primary classification errors occur between `Medium_Load` and `Maximum_Load`. Electrical profiles in transitional operational states share similar power factor and reactive power signatures.
-3. **Realistic, Leakage-Free Generalization**: Achieving **~80% accuracy** on a purely chronological blind test set (December) demonstrates honest model generalization rather than inflated metrics from random cross-validation leakage.
+1. **Near-Perfect Identification of Light Load**: The model reaches **0.99 precision** and **0.95 recall** for `Light_Load`, making it highly reliable for identifying off-peak intervals in the historical data.
+2. **Boundary Overlap between Medium and Maximum Load**: The primary misclassifications occur between `Medium_Load` and `Maximum_Load`. Both regimes share overlapping electrical signatures in reactive power and power factor, making them harder to separate.
+3. **No Data Leakage**: Using a chronological hold-out split (no shuffling) ensures that December test labels were never visible during training. The 79.85% accuracy is therefore a genuine, unbiased estimate of classification performance on unseen records.
