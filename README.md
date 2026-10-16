@@ -104,3 +104,5 @@ weighted avg       0.97      0.97      0.97      2977
 1. **High Precision and Recall Across All Classes**: The ensemble achieves **0.98 precision** on `Light_Load`, **0.98 precision** on `Maximum_Load`, and **0.96 precision** on `Medium_Load`.
 2. **Resolving the Medium vs. Maximum Load Boundary**: Incorporating `winter_schedule` resolved the transitional ambiguity between `Medium_Load` and `Maximum_Load`, increasing `Maximum_Load` recall from **52.5% to 93.4%** (+40.9%) and `Medium_Load` recall from **63.8% to 96.9%** (+33.1%).
 3. **Zero Data Leakage**: The model was evaluated on a strictly out-of-time chronological test set (December). The **97.38% accuracy** is an honest evaluation demonstrating real-world classification capability on unseen operational periods.
+
+> **Class-probability multipliers were tried and did not help, so the plain ensemble is reported.**
